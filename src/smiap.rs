@@ -1,32 +1,22 @@
+use std::collections::HashSet;
+
+use crate::containers::Container;
 use reqwest;
 
-use serde::Deserialize;
-
-#[derive(Deserialize, Debug)]
-pub struct Container {
-    pub id: i32,
-    pub name: String,
-    pub do_not_remove: bool,
-    pub cores: i32,
-    pub memory_gb: i32,
-    pub partition_size_gb: i32,
-    pub group: Option<i32>,
-}
-
 pub struct Smiap {
-    url: &'static str
+    url: &'static str,
 }
 
 impl Smiap {
-    pub fn new() -> Smiap {
+    pub fn new() -> Self {
         let url = "https://smiap.ru/api/v1";
 
-        Smiap{ url }
+        Smiap { url }
     }
 
-    pub fn get_containers(&self) -> Result<Vec<Container>, reqwest::Error> {
+    pub fn fetch_containers(&self) -> Result<HashSet<Container>, reqwest::Error> {
         let url = format!("{}/{}", self.url, "containers/");
 
-        reqwest::blocking::get(url)?.json::<Vec<Container>>()
+        reqwest::blocking::get(url)?.json::<HashSet<Container>>()
     }
 }
