@@ -2,12 +2,13 @@ mod containers;
 mod lxd;
 mod smiap;
 
+use crate::lxd::LXD;
+
 fn main() {
     let smiap = smiap::Smiap::new();
     let desired = smiap.fetch_containers().unwrap();
 
-    let lxd = lxd::LXD::new();
-    let actual = lxd.get_containers();
+    let actual = LXD::get_containers();
 
     println!("Desired:\n{:?}", desired);
     println!("Actual:\n{:?}", actual);
@@ -20,9 +21,9 @@ fn main() {
     println!("To delete:\n{:?}", to_delete);
 
     for container in to_create {
-        container.to_lxd();
+        LXD::create_local(container).unwrap();
     }
     for container in to_delete {
-        drop(container.to_lxd());
+        LXD::delete(container);
     }
 }

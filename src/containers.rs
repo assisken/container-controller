@@ -31,15 +31,6 @@ impl Container {
         }
     }
 
-    pub fn to_lxd(&self) -> lxd::Container {
-        lxd::Container::new(
-            lxd::Location::Local,
-            self.name.as_str(),
-            self.image.as_str(),
-        )
-        .unwrap()
-    }
-
     pub fn from_lxd_info(info: lxd::Info) -> Self {
         Self::from_name(info.name)
     }

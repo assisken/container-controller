@@ -1,7 +1,8 @@
 use std::collections::HashSet;
 
-use crate::containers::Container;
 use reqwest;
+
+use crate::containers::Container;
 
 pub struct Smiap {
     url: &'static str,
