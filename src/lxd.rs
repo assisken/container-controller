@@ -58,6 +58,42 @@ impl LXD {
         Ok(container)
     }
 
+    pub fn set_limits<'a>(container: &'a Container) -> Result<&Container> {
+        Self::set_cores(container)?;
+        Self::set_memory(container)
+    }
+
+    fn set_cores<'a>(container: &'a Container) -> Result<&Container> {
+        let cores = match container.cores {
+            Some(memory) => memory,
+            None => return Ok(container),
+        };
+
+        match lxc(&[
+            "config",
+            "set",
+            &container.name,
+            "limits.cpu",
+            &cores.to_string(),
+        ]) {
+            Ok(_) => Ok(container),
+            Err(err) => Err(err),
+        }
+    }
+
+    fn set_memory<'a>(container: &'a Container) -> Result<&Container> {
+        let memory_gb = match container.memory_gb {
+            Some(memory) => memory,
+            None => return Ok(container),
+        };
+        let memory = format!("{}GB", memory_gb);
+
+        match lxc(&["config", "set", &container.name, "limits.memory", &memory]) {
+            Ok(_) => Ok(container),
+            Err(err) => Err(err),
+        }
+    }
+
     pub fn delete(container: &Container) {
         if container.do_not_remove == Some(true) {
             return;

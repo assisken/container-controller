@@ -19,20 +19,25 @@ fn default_image() -> String {
 }
 
 impl Container {
-    fn from_name(name: String) -> Self {
+    pub fn from_lxd_info(info: lxd::Info) -> Self {
+        let cores: Option<i32> = match info.config.get("limits.cpu") {
+            Some(cpu) => Some(cpu.parse().unwrap()),
+            None => None,
+        };
+        let memory_gb: Option<i32> = match info.config.get("limits.memory") {
+            Some(memory) => Some(memory.replace("GB", "").parse().unwrap()),
+            None => None,
+        };
+
         Container {
-            name,
+            cores,
+            memory_gb,
+            name: info.name,
             image: default_image(),
-            cores: None,
-            memory_gb: None,
             partition_size_gb: None,
             do_not_remove: None,
             group: None,
         }
-    }
-
-    pub fn from_lxd_info(info: lxd::Info) -> Self {
-        Self::from_name(info.name)
     }
 }
 

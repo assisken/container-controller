@@ -26,4 +26,10 @@ fn main() {
     for container in to_delete {
         LXD::delete(container);
     }
+    for container in desired {
+        match LXD::set_limits(&container) {
+            Ok(container) => println!("Succesfully set limits for: {}", container.name),
+            Err(err) => println!("Error at setting limits:\n{}", err),
+        };
+    }
 }
